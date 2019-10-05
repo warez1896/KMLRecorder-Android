@@ -9,8 +9,8 @@ import java.util.*
 
 class DBHelper(context: Context) : SQLiteOpenHelper(context, "kml", null, 1) {
     override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {
-        p0!!.execSQL("DROP TABLE IF EXISTS history")
-        onCreate(p0)
+//        p0!!.execSQL("DROP TABLE IF EXISTS history")
+//        onCreate(p0)
     }
 
     override fun onCreate(p0: SQLiteDatabase?) {
@@ -35,7 +35,7 @@ class DBHelper(context: Context) : SQLiteOpenHelper(context, "kml", null, 1) {
      fun reload() : MutableList<String>{
         val ml : MutableList<String> = ArrayList()
         val db = this.readableDatabase
-        val cursor = db.query("history", arrayOf("cons", "date"), null, null, null, null, "id ASC")
+        val cursor = db.query("history", arrayOf("cons", "date"), null, null, null, null, "id DESC")
         while (cursor.moveToNext()){
             ml.add("${cursor.getFloat(0)} - ${cursor.getString(1)}")
         }

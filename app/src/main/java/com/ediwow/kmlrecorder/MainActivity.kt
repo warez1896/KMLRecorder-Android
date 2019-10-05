@@ -8,32 +8,38 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var edLiters: EditText
-    private lateinit var edKm: EditText
+    private lateinit var edCKm: EditText
     private lateinit var btSave: Button
     private lateinit var lvHistory: ListView
     private lateinit var context: Context
     private lateinit var helper: DBHelper
+    private lateinit var edPkm: EditText
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         context = this
         helper = DBHelper(context)
         edLiters = findViewById(R.id.edL)
-        edKm = findViewById(R.id.edKM)
+        edCKm = findViewById(R.id.edCKM)
+        edPkm = findViewById(R.id.edPKM)
         btSave = findViewById(R.id.btSave)
         btSave.setOnClickListener {
-            calculate(edKm.text.toString(), edLiters.text.toString())
+            calculate(edCKm.text.toString(), edLiters.text.toString(), edPkm.text.toString())
         }
         lvHistory = findViewById(R.id.lvHistory)
         reload()
     }
 
-    private fun calculate(km: String, ltr: String) {
+    private fun calculate(Ckm: String, ltr: String, Pkm: String) {
         try {
-            val fKm = km.toFloat()
+            val fCkm = Ckm.toFloat()
             val fLtr = ltr.toFloat()
-            val cons = fKm / fLtr
-            saveToDatabase(fKm, fLtr, cons)
+            var fPkm = 0f
+            if (Pkm != "")
+                fPkm = Pkm.toFloat()
+
+            val cons = (fCkm - fPkm) / fLtr
+            saveToDatabase(fCkm, fLtr, cons)
         } catch (e: Exception) {
             e.printStackTrace()
             Toast.makeText(context, "Invalid input", Toast.LENGTH_LONG).show()
@@ -41,17 +47,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun saveToDatabase(km: Float, ltr: Float, cons: Float) {
-
         helper.save(km, ltr, cons)
         Toast.makeText(context, "Saved", Toast.LENGTH_LONG).show()
-        edKm.setText("")
+        edCKm.setText("")
         edL.setText("")
         reload()
     }
 
     private fun reload() {
-        val arrAdapter =
-            ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, helper.reload())
+        val arrAdapter = ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, helper.reload())
         lvHistory.adapter = arrAdapter
     }
 }
